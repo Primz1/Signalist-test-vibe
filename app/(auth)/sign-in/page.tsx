@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import InputField from "@/components/forms/InputField";
@@ -10,6 +10,8 @@ import { toast } from "sonner";
 
 const SignIn = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const showVerifyPrompt = searchParams?.get('verify');
 
   const {
     register,
@@ -27,7 +29,17 @@ const SignIn = () => {
   const onSubmit = async (data: SignInFormData) => {
     try {
       const result = await signInWithEmail(data);
-      if(result.success) router.push('/')
+      if(result.success) {
+        router.push('/');
+        return;
+      }
+
+      const description = result.message || 'Please try again.';
+      toast.error('Sign in failed', { description });
+
+      if (description.toLowerCase().includes('verify')) {
+        toast.info('Check your email inbox (and spam folder) for the verification link we sent you.');
+      }
     } catch (e) {
       console.error(e);
       toast.error('Sign In failed', {
@@ -40,6 +52,12 @@ const SignIn = () => {
   return (
     <>
       <h1 className='form-title'>Welcome Back</h1>
+
+      {showVerifyPrompt && (
+        <p className="rounded-md bg-yellow-500/10 border border-yellow-500/40 px-4 py-3 text-sm text-yellow-100 mb-4">
+          Account created! Please check your email for the verification link before signing in.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
 

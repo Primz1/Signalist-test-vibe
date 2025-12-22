@@ -183,20 +183,22 @@ declare global {
         className?: string;
     };
 
+    type AlertCondition = 'gt' | 'lt';
+    type AlertFrequency = 'once' | 'per_hour' | 'per_day';
+    type AlertType = 'price';
+
     type AlertData = {
         symbol: string;
         company: string;
         alertName: string;
-        alertType: 'upper' | 'lower';
-        threshold: string;
-    };
-
-    type AlertModalProps = {
-        alertId?: string;
-        alertData?: AlertData;
-        action?: string;
-        open: boolean;
-        setOpen: (open: boolean) => void;
+        alertType: AlertType;
+        condition: AlertCondition;
+        threshold: number;
+        frequency: AlertFrequency;
+        lastTriggeredAt?: string;
+        lastNotifiedAt?: string;
+        lastPrice?: number;
+        lastChangePercent?: number;
     };
 
     type RawNewsArticle = {
@@ -216,10 +218,30 @@ declare global {
         symbol: string;
         company: string;
         alertName: string;
-        currentPrice: number;
-        alertType: 'upper' | 'lower';
+        alertType: AlertType;
+        condition: AlertCondition;
         threshold: number;
+        frequency: AlertFrequency;
+        isActive?: boolean;
+        createdAt?: string;
+        currentPrice?: number;
         changePercent?: number;
+        lastTriggeredAt?: string;
+        lastNotifiedAt?: string;
+        lastPrice?: number;
+        lastChangePercent?: number;
+    };
+
+    type AlertNotification = {
+        _id?: string;
+        alertId: string;
+        symbol: string;
+        company: string;
+        message: string;
+        price?: number;
+        changePercent?: number;
+        triggeredAt: string;
+        read: boolean;
     };
 }
 

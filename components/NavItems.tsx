@@ -2,11 +2,34 @@
 
 import { NAV_ITEMS } from "@/lib/constants"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { SearchCommand } from "./SearchCommand"
+import { addToWatchlist } from "@/lib/actions/watchlist.actions"
+import { useTransition } from "react"
+import { toast } from "sonner"
 
-const NavItems = ({ initialStocks }: { initialStocks: StockWithWatchlistStatus[] }) => {
+const NavItems = ({ initialStocks, watchlistSymbols }: { initialStocks: StockWithWatchlistStatus[]; watchlistSymbols?: string[] }) => {
     const pathname: string = usePathname()
+    const [isPending, startTransition] = useTransition();
+    const router = useRouter();
+
+    const handleQuickAdd = (stock: StockWithWatchlistStatus) => {
+        startTransition(async () => {
+            const res = await addToWatchlist(stock.symbol, stock.name);
+            if (!res.success) {
+                toast.error(res.message || 'Failed to add to watchlist');
+                return false;
+            }
+            toast.success(`${stock.symbol} added to watchlist`);
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('watchlist:added', { detail: { symbol: stock.symbol, company: stock.name } }));
+            }
+            if (pathname === '/watchlist') {
+                router.refresh();
+            }
+            return true;
+        })
+    }
 
     const isActive = (path: string) => {
         if (path === '/') return pathname === '/';
@@ -20,8 +43,11 @@ const NavItems = ({ initialStocks }: { initialStocks: StockWithWatchlistStatus[]
                     <li key="search-trigger">
                         <SearchCommand
                             renderAs="text"
-                            label="Search"
+                            label={isPending ? "Working..." : "Search"}
                             initialStocks={initialStocks}
+                            watchlistSymbols={watchlistSymbols}
+                            quickAddEnabled
+                            onQuickAdd={handleQuickAdd}
                         />
                     </li>
                 )

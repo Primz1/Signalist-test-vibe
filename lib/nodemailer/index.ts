@@ -47,3 +47,34 @@ export const sendNewsSummaryEmail = async ({ email, date, newsContent }: NewsSum
     await transporter.sendMail(mailOptions);
 }
 
+type PriceAlertEmailData = {
+        email: string;
+        symbol: string;
+        company: string;
+        condition: 'gt' | 'lt';
+        threshold: number;
+        price: number;
+};
+
+export const sendPriceAlertEmail = async ({ email, symbol, company, condition, threshold, price }: PriceAlertEmailData) => {
+        const subject = `Price alert: ${symbol} is ${condition === 'gt' ? 'above' : 'below'} ${threshold}`;
+        const html = `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding:16px; background:#0b0b0d; color:#f5f5f5;">
+                <h2 style="margin:0 0 12px 0; color:#fdd458;">${company} (${symbol})</h2>
+                <p style="margin:0 0 8px 0;">Current price: <strong>$${price.toFixed(2)}</strong></p>
+                <p style="margin:0 0 8px 0;">Condition hit: <strong>${condition === 'gt' ? 'Greater than' : 'Less than'} $${threshold}</strong></p>
+                <p style="margin:16px 0 0 0; color:#9ca3af; font-size:14px;">You received this alert from Signalist.</p>
+            </div>
+        `;
+
+        const mailOptions = {
+                from: '"Signalist Alerts" <signalist@jsmastery.pro>',
+                to: email,
+                subject,
+                text: `${symbol} hit your alert: price ${price.toFixed(2)} (${condition} ${threshold})`,
+                html,
+        };
+
+        await transporter.sendMail(mailOptions);
+};
+

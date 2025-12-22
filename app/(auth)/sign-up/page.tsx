@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { error } from "console";
 
 const SignUp = () => {
-  const rounter = useRouter();
+  const router = useRouter();
 
   const {
     register,
@@ -37,7 +37,15 @@ const SignUp = () => {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       const result = await signUpWithEmail(data);
-      if(result.success) rounter.push('/')
+      if(result.success) {
+        toast.success('Account created! Check your email for the verification link.');
+        router.push('/sign-in?verify=1');
+        return;
+      }
+
+      toast.error('Sign Up failed', {
+        description: result.message || 'Failed to create an account.'
+      });
     } catch (e) {
       console.error(e);
       toast.error('Sign Up failed', {

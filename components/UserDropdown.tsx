@@ -14,10 +14,10 @@ import { signOut } from "@/lib/actions/auth.actions";
 
 import React, { use } from 'react'
 import { Button } from "./ui/button";
-import { LogOut } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import NavItems from "./NavItems";
 
-const UserDropdown = ({user, initialStocks}: {user: User, initialStocks: StockWithWatchlistStatus[]}) => {
+const UserDropdown = ({user, initialStocks, watchlistSymbols}: {user: User, initialStocks: StockWithWatchlistStatus[], watchlistSymbols?: string[]}) => {
     const router = useRouter();
 
     const handleSignOut = async () => {
@@ -43,6 +43,7 @@ const UserDropdown = ({user, initialStocks}: {user: User, initialStocks: StockWi
     </span> 
 
 </div>
+    <ChevronDown className="hidden md:block h-4 w-4 text-gray-500" />
     </Button>
   </DropdownMenuTrigger>
   <DropdownMenuContent className="text-gray-400 ">
@@ -71,7 +72,7 @@ const UserDropdown = ({user, initialStocks}: {user: User, initialStocks: StockWi
     </DropdownMenuItem>
     <DropdownMenuSeparator className=" hidden sm:block bg-gray-600"/>
     <nav className="sm:hidden">
-        <NavItems initialStocks={initialStocks} />
+      <NavItems initialStocks={initialStocks} watchlistSymbols={watchlistSymbols} />
 
     </nav>
     
