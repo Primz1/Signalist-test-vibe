@@ -153,10 +153,10 @@ const WatchlistPage = async () => {
     const metrics = metricsBySymbol[symbolUpper] ?? {};
     const isCrypto = metrics.isCrypto ?? isCryptoSymbol(symbolUpper);
     return {
-      _id: typeof item._id === 'object' && 'toString' in item._id ? (item._id as any).toString() : (item._id as any) ?? undefined,
+      _id: item._id && typeof item._id === 'object' && 'toString' in item._id ? (item._id as any).toString() : (item._id as any) ?? undefined,
       symbol: symbolUpper,
       company: item.company,
-      addedAt: item.addedAt ? new Date(item.addedAt).toISOString() : null,
+      addedAt: item.addedAt ? new Date(item.addedAt).toISOString() : undefined,
       price: metrics.price,
       changePercent: metrics.changePercent,
       marketCap: metrics.marketCap,

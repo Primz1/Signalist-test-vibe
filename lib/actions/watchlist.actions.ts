@@ -4,7 +4,7 @@
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { connectToDatabase } from '@/database/mongoose';
-import { Watchlist, addWatchlistItem, listWatchlistItems, listWatchlistSymbols as listSymbolsOnly, removeWatchlistItem } from '@/database/models/watchlist.model';
+import { Watchlist, WatchlistItem, addWatchlistItem, listWatchlistItems, listWatchlistSymbols as listSymbolsOnly, removeWatchlistItem } from '@/database/models/watchlist.model';
 import { auth } from '@/lib/better-auth/auth';
 
 type ActionResult<T> = { success: true; data: T } | { success: false; message: string };
@@ -45,7 +45,7 @@ export async function listWatchlist(): Promise<ActionResult<WatchlistItem[]>> {
 
     await connectToDatabase();
     const items = await listWatchlistItems(user.id);
-    return { success: true, data: items };
+    return { success: true, data: items as unknown as WatchlistItem[] };
   } catch (err) {
     console.error('listWatchlist error:', err);
     return { success: false, message: 'Failed to load watchlist' };
@@ -80,7 +80,7 @@ export async function addToWatchlist(symbol: string, company: string): Promise<A
     if (!item) return { success: false, message: 'Failed to add to watchlist' };
     revalidatePath('/watchlist');
     revalidatePath('/');
-    return { success: true, data: item as WatchlistItem };
+    return { success: true, data: item as unknown as WatchlistItem };
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to add to watchlist';
     console.error('addToWatchlist error:', err);
@@ -101,7 +101,7 @@ export async function removeFromWatchlist(symbol: string): Promise<ActionResult<
     const removed = await removeWatchlistItem(user.id, symbol);
     revalidatePath('/watchlist');
     revalidatePath('/');
-    return { success: true, data: removed as WatchlistItem };
+    return { success: true, data: removed as unknown as WatchlistItem };
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to remove from watchlist';
     console.error('removeFromWatchlist error:', err);

@@ -18,7 +18,7 @@ const NavItems = ({ initialStocks, watchlistSymbols }: { initialStocks: StockWit
             const res = await addToWatchlist(stock.symbol, stock.name);
             if (!res.success) {
                 toast.error(res.message || 'Failed to add to watchlist');
-                return false;
+                return;
             }
             toast.success(`${stock.symbol} added to watchlist`);
             if (typeof window !== 'undefined') {
@@ -27,7 +27,6 @@ const NavItems = ({ initialStocks, watchlistSymbols }: { initialStocks: StockWit
             if (pathname === '/watchlist') {
                 router.refresh();
             }
-            return true;
         })
     }
 
