@@ -160,6 +160,6 @@ export const checkPriceAlerts = inngest.createFunction(
   async ({ step }) => {
     await connectToDatabase();
     const alerts = await step.run("load-active-alerts", listActiveAlerts);
-    return step.run("evaluate-alerts", () => evaluateAlerts(alerts));
+    return step.run("evaluate-alerts", () => evaluateAlerts(alerts as Awaited<ReturnType<typeof listActiveAlerts>>));
   }
 );

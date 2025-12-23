@@ -18,7 +18,7 @@ export async function getNotifications(): Promise<ActionResult<AlertNotification
     if (!user?.id) return { success: false, message: 'Not authenticated' };
     await connectToDatabase();
     const items = await listAlertNotifications(user.id, 30);
-    return { success: true, data: items as AlertNotification[] };
+    return { success: true, data: items as unknown as AlertNotification[] };
   } catch (err) {
     console.error('getNotifications error', err);
     return { success: false, message: 'Failed to load notifications' };
@@ -52,7 +52,7 @@ export async function addNotificationDirect(input: {
     if (!input.userId) return { success: false, message: 'Missing user' };
     await connectToDatabase();
     const doc = await addAlertNotification(input);
-    return { success: true, data: doc.toObject() as AlertNotification };
+    return { success: true, data: doc.toObject() as unknown as AlertNotification };
   } catch (err) {
     console.error('addNotificationDirect error', err);
     return { success: false, message: 'Failed to add notification' };
