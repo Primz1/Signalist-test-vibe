@@ -168,6 +168,7 @@ declare global {
         category: string;
         related: string;
         image?: string;
+        datetimeString?: string;
     };
 
     type WatchlistNewsProps = {

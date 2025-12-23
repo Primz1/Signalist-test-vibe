@@ -92,6 +92,7 @@ export const formatArticle = (
   source: article.source || (isCompanyNews ? 'Company News' : 'Market News'),
   url: article.url!,
   datetime: article.datetime!,
+  datetimeString: article.datetime ? new Date(article.datetime * 1000).toLocaleString('en-US') : '',
   image: article.image || '',
   category: isCompanyNews ? 'company' : article.category || 'general',
   related: isCompanyNews ? symbol! : article.related || '',
