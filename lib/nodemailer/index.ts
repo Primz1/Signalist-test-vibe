@@ -1,5 +1,14 @@
 import nodemailer from 'nodemailer';
+import { getAppUrl } from '@/lib/env';
 import { WELCOME_EMAIL_TEMPLATE, NEWS_SUMMARY_EMAIL_TEMPLATE } from '@/lib/nodemailer/templates';
+
+const withAppUrl = (html: string) => {
+    const appUrl = getAppUrl();
+    return html
+        .replaceAll('{{appUrl}}', appUrl)
+        .replaceAll('https://stock-market-dev.vercel.app', appUrl)
+        .replaceAll('https://signalist.app', appUrl);
+};
 
 export const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -10,9 +19,11 @@ export const transporter = nodemailer.createTransport({
 })
 
 export const sendWelcomeEmail = async ({ email, name, intro }: WelcomeEmailData) => {
-    const htmlTemplate = WELCOME_EMAIL_TEMPLATE
-        .replace('{{name}}', name)
-        .replace('{{intro}}', intro);
+    const htmlTemplate = withAppUrl(
+        WELCOME_EMAIL_TEMPLATE
+            .replace('{{name}}', name)
+            .replace('{{intro}}', intro)
+    );
 
     const mailOptions = {
         from: `"Signalist" <signalist@jsmastery.pro>`,
@@ -32,9 +43,11 @@ type NewsSummaryEmailData = {
 };
 
 export const sendNewsSummaryEmail = async ({ email, date, newsContent }: NewsSummaryEmailData) => {
-    const htmlTemplate = NEWS_SUMMARY_EMAIL_TEMPLATE
-        .replace('{{date}}', date)
-        .replace('{{newsContent}}', newsContent);
+    const htmlTemplate = withAppUrl(
+        NEWS_SUMMARY_EMAIL_TEMPLATE
+            .replace('{{date}}', date)
+            .replace('{{newsContent}}', newsContent)
+    );
 
     const mailOptions = {
         from: '"Signalist News" <signalist@jsmastery.pro>',

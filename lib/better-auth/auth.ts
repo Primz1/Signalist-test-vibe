@@ -1,6 +1,7 @@
 import { any, betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { connectToDatabase } from "@/database/mongoose";
+import { getAppUrl, getTrustedOrigins } from "@/lib/env";
 import { transporter } from "@/lib/nodemailer";
 import { nextCookies } from "better-auth/next-js";
 
@@ -13,10 +14,20 @@ export const getAuth = async () => {
   const db = mongoose.connection.db;
 
   if (!db) throw new Error("MongoDB connection not established");
+  const baseURL = getAppUrl();
+
+  if (process.env.NODE_ENV === "production" && baseURL.includes("localhost")) {
+    console.warn(
+      "BETTER_AUTH_URL is missing or points to localhost in production. " +
+        "Set BETTER_AUTH_URL to your Vercel URL in project environment variables."
+    );
+  }
+
   authInstance = betterAuth({
     database: mongodbAdapter(db as any),
     secret: process.env.BETTER_AUTH_SECRET,
-    baseURL: process.env.BETTER_AUTH_URL,
+    baseURL,
+    trustedOrigins: getTrustedOrigins(),
     emailAndPassword: {
       enabled: true,
       disableSignUp: false,

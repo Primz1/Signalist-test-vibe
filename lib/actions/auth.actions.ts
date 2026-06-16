@@ -10,7 +10,8 @@ export const signUpWithEmail = async ({ email, password, fullName, country, inve
         })
 
         if (response) {
-            await inngest.send({
+            // Fire-and-forget: don't block sign-up if Inngest fails
+            inngest.send({
                 name: 'app/user.created',
                 data: {
                     email,
@@ -20,7 +21,9 @@ export const signUpWithEmail = async ({ email, password, fullName, country, inve
                     riskTolerance,
                     preferredIndustry
                 }
-            })
+            }).catch((err) => {
+                console.warn('Inngest event failed (non-blocking):', err.message);
+            });
         }
 
         return { success: true, data: response }
